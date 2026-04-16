@@ -1,6 +1,6 @@
 # Project Structure
 
-'''
+```
 wire-transfer-agent/
 |
 │── readme.md
@@ -11,32 +11,32 @@ wire-transfer-agent/
 ├── transactions.csv
 └── requirements.txt
 
-'''
+```
 
 # Installation
 1. Clone or download the project
-''' bash
+``` bash
 cd wire-transfer-agent
-'''
+```
 
-2. Install dependencies
-''' bash
+3. Install dependencies
+``` bash
 pip install -r requirements.txt
-'''
+```
 
-3. Set API Key(Gemini Vertex)
+4. Set API Key(Gemini Vertex)
 Mac/Linux
-''' bash
+``` bash
 export GEMINI_API_KEY="your api key here"
-'''
+```
 
 Windows
-''' PowerShell
+``` PowerShell
 $env:GEMINI_API_KEY="your_api_key_here"
-'''
+```
 
 # Run the Project
 
-'''bash
+```bash
 python main.py
-'''
+```
