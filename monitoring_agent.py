@@ -1,41 +1,76 @@
-import pandas as pd
-from math import radians, sin, cos, sqrt, atan2
+import os
+import json
+from langchain_core.prompts import PromptTemplate
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.output_parsers import StrOutputParser
 
-def monitor_transaction(
-    user_id,
-    amount,
-    payment_type,
-    receiver_id,
-    receiver_country,
-    sender_country,
-    device_id,
-    login_attempts,
-    time_since_last_txn,
-    hour
-):
-    df = pd.read_csv("transactions.csv")
+api_key=os.getenv("GEMINI_API_KEY")
 
-    user_history = df[df["user_id"] == user_id]
+# Setup Gemini via LangChain
+llm = ChatGoogleGenerativeAI(
+     model="gemini-2.5-flash",
+     api_key=api_key,
+     vertexai=True,
+     temperature=0.2
+ )
+parser = StrOutputParser()
 
-    if user_history.empty:
-        raise ValueError("No history found for this user.")
+prompt_template = PromptTemplate(
+    input_variables=[
+        "amount",
+        "payment_type",
+        "receiver_id",
+        "receiver_country",
+        "sender_country",
+        "device_id",
+        "login_attempts",
+        "time_since_last_txn",
+        "hour"
+    ],
+    template="""
+You are a fraud monitoring agent.
 
-    known_receivers = user_history["receiver_id"].tolist()
-    known_devices = user_history["device_id"].tolist()
+Analyze the transaction and output ONLY JSON.
 
-    avg_amount = user_history["amount"].mean()
-    normal_country = user_history["receiver_country"].mode()[0]
+Transaction:
+- Amount: £{amount}
+- Payment Type: {payment_type}
+- Receiver: {receiver_id}
+- Receiver Country: {receiver_country}
+- Sender Country: {sender_country}
+- Device ID: {device_id}
+- Login Attempts: {login_attempts}
+- Time Since Last Transaction: {time_since_last_txn} minutes
+- Hour: {hour}
+
+Return JSON with:
+- new_receiver (true/false)
+- new_device (true/false)
+- large_amount (true/false)
+- international_transfer (true/false)
+- late_night (true/false)
+- many_login_attempts (true/false)
+- rapid_transfer (true/false)
+- high_risk_payment_rail (true/false)
+
+Do not include explanation. Only JSON.
+"""
+)
+
+chain = prompt_template | llm | parser
 
 
-    features = {
-        "new_receiver": receiver_id not in known_receivers,
-        "new_device": device_id not in known_devices,
-        "large_amount": amount > avg_amount * 5,
-        "international_transfer": receiver_country != sender_country,
-        "late_night": 0 <= hour <= 5,
-        "many_login_attempts": login_attempts >= 3,
-        "rapid_transfer": time_since_last_txn < 10,
-        "high_risk_payment_rail": payment_type.upper() == "SWIFT"
-    }
+def monitor_transaction(data: dict):
+    response = chain.invoke(data)
+    response = response.strip()
+
+    if response.startswith("```"):
+        response = response.replace("```json", "").replace("```", "").strip()
+
+
+    try:
+        features = json.loads(response)
+    except:
+        raise ValueError("LLM did not return valid JSON:\n" + response)
 
     return features
