@@ -18,6 +18,7 @@ hour = int(input("Hour of Transaction (0-23): "))
 
 # -------- Prepare data for LLM --------
 data = {
+    "user_id": user_id,
     "amount": amount,
     "payment_type": payment_type,
     "receiver_id": receiver_id,
