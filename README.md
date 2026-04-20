@@ -1,6 +1,6 @@
 # Project Structure
 
-'''
+```
 wire-transfer-agent/
 |
 │── README.md
@@ -9,7 +9,7 @@ wire-transfer-agent/
 ├── transactions.csv
 └── requirements.txt
 
-'''
+```
 
 # Installation
 1. Clone or download the project
