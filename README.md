@@ -1,42 +1,33 @@
 # Project Structure
 
-```
+'''
 wire-transfer-agent/
 |
-│── readme.md
+│── README.md
 ├── main.py
-├── monitoring_agent.py
-├── risk_agent.py
-├── llm_analyst_agent.py
+├── streamlitFrontEnd.py
 ├── transactions.csv
 └── requirements.txt
 
-```
+'''
 
 # Installation
 1. Clone or download the project
-``` bash
-cd wire-transfer-agent
+```bash
+git clone https://github.com/yukic993/FTEC5660_Project
 ```
 
-3. Install dependencies
+``` bash
+cd FTEC5660_Project
+```
+
+2. Install dependencies
 ``` bash
 pip install -r requirements.txt
-```
-
-4. Set API Key(Gemini Vertex)
-Mac/Linux
-``` bash
-export GEMINI_API_KEY="your api key here"
-```
-
-Windows
-``` PowerShell
-$env:GEMINI_API_KEY="your_api_key_here"
 ```
 
 # Run the Project
 
 ```bash
-python main.py
+streamlit run streamlitFrontEnd.py
 ```
